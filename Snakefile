@@ -136,10 +136,6 @@ rule vdj_lib:
 			-t 1
 		"""
 
-# Function to define vdj samples without libraries
-#def get_vdj_no_library_input(wildcards):
-#	return vdj_no_library_table.loc[wildcards.sample,"sample"]
-
 # VDJ with TRUST without VDJ library
 rule vdj_no_lib:
 	input:
@@ -161,10 +157,6 @@ rule vdj_no_lib:
 			--od {output} \
 			-t 1
 		"""
-
-# Function to define velocity input samples
-def get_velocyto_input(wildcards):
-		return velocyto_table.loc[wildcards.sample,"sample"]
 
 # Velocyto rule
 rule velocity:
@@ -190,10 +182,6 @@ rule velocity:
 		mkdir -p velocyto/{wildcards.sample}
 		mv cellranger/{wildcards.sample}/velocyto velocyto/{wildcards.sample}
 		"""
-
-# Function to define ARCAS HLA extract input
-def get_arcas_extract_input(wildcards):
-		return arcas_table.loc[wildcards.sample,"sample"]
 
 # ARCAS extract rule
 rule arcas_extract:
