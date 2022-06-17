@@ -8,7 +8,7 @@ The workflow assumes snakemake has been installed and a profile "slurm_htc" has 
 
 The workflow begins with describing the input and output files and paths using the "samples.csv" file. This file is used to create the directed acyclic graph (DAG) to begin the pipeline based on the tasks required.
 
-![DAG](dag_example.pdf)
+![DAG](dag_example.pdf?raw=True)
 
 ## Create and check the DAG
 
