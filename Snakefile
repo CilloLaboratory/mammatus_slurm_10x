@@ -10,8 +10,8 @@ citeseq_table = samples_table[samples_table.sample_citeseq == True]
 SAMPLES_CITESEQ = citeseq_table.loc[:,"sample"].values.tolist()
 
 vdj_table = samples_table[samples_table.sample_vdj == True]
-vdj_library_table = vdj_table[~vdj_table['fastq_vdj'].str.contains("False")]
-vdj_no_library_table = vdj_table[vdj_table['fastq_vdj'].str.contains("False")]
+vdj_library_table = vdj_table[~vdj_table['fastq_vdj'].astype(str).str.contains("False")]
+vdj_no_library_table = vdj_table[vdj_table['fastq_vdj'].astype(str).str.contains("False")]
 SAMPLES_VDJ_library = vdj_library_table.loc[:,"sample"].values.tolist()
 SAMPLES_VDJ_no_library = vdj_no_library_table.loc[:,"sample"].values.tolist()
 SAMPLES_VDJ = SAMPLES_VDJ_library + SAMPLES_VDJ_no_library
