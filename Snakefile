@@ -90,7 +90,7 @@ rule citeseq:
 		"""
 		"""
 		Rscript cell_barcode_id.R {input.barcodes}/outs/filtered_feature_bc_matrix {wildcards.sample}
-		EXPECTED_CELLS=$(wc -l FS_Ton_TS_whitelist.csv | cut -d' ' -f 1)
+		EXPECTED_CELLS=$(wc -l {wildcards.sample}_whitelist.csv | cut -d' ' -f 1)
 		"""
 		"""
 		module purge
