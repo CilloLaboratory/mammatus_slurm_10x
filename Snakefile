@@ -13,8 +13,9 @@ vdj_table = samples_table[samples_table.sample_vdj == True]
 vdj_library_table = vdj_table[~vdj_table['fastq_vdj'].astype(str).str.contains("False")]
 vdj_no_library_table = vdj_table[vdj_table['fastq_vdj'].astype(str).str.contains("False")]
 SAMPLES_VDJ_library = vdj_library_table.loc[:,"sample"].values.tolist()
+SAMPLES_VDJ_library = [s + "_TCR" for s in SAMPLES_VDJ_library]
 SAMPLES_VDJ_no_library = vdj_no_library_table.loc[:,"sample"].values.tolist()
-SAMPLES_VDJ = SAMPLES_VDJ_library + SAMPLES_VDJ_no_library
+# SAMPLES_VDJ = SAMPLES_VDJ_library + SAMPLES_VDJ_no_library
 
 velocyto_table = samples_table[samples_table.sample_velocity == True]
 SAMPLES_VELO = velocyto_table.loc[:,"sample"].values.tolist()
@@ -31,7 +32,8 @@ rule all:
 	input:
 		expand("cellranger/{final_gex}",final_gex=SAMPLES_GEX),
 		expand("citeseq/{final_citeseq}",final_citeseq=SAMPLES_CITESEQ),
-		expand("vdj/{final_vdj}",final_vdj=SAMPLES_VDJ),
+		expand("vdj_cellranger/{final_vdj}",final_vdj=SAMPLES_VDJ_library),
+		expand("vdj_trust4/{final_vdj}",final_vdj=SAMPLES_VDJ_no_library),
 		expand("velocyto/{final_velocity}",final_velocity=SAMPLES_VELO),
 		expand("arcas/{final_arcas}/genotype/",final_arcas=SAMPLES_ARCAS)
 
@@ -55,13 +57,14 @@ rule count:
 		module load cellranger/6.1.2
 		"""
 		"""
+		mkdir -p cellranger
+		cd cellranger
 		cellranger count --id={wildcards.sample} \
 			--transcriptome=/bgfs/genomics/refs/CellRanger/refdata-cellranger-GRCh38-3.0.0 \
 			--fastqs={input} \
 			--sample={wildcards.sample} \
 			--localcores=8 \
 			--localmem=128
-		mv {wildcards.sample} cellranger
 		"""
 
 # Function to read in citeseq fastq paths from samples_table
@@ -101,7 +104,7 @@ rule citeseq:
 			-R2 {input.fastq}/r2_merged_fastq.gz \
 			-t citeseq_totalseqC_10tags_human_murine.csv \
   			-cbf 1 -cbl 16 -umif 17 -umil 28 \
-			-trim 0 \
+			-trim 10 \
 			-o {output} \
 			-cells $EXPECTED_CELLS \
 			-wl {wildcards.sample}_whitelist.csv \
@@ -112,28 +115,30 @@ rule citeseq:
 def get_vdj_library_input(wildcards):
 	return vdj_library_table.loc[wildcards.sample,"fastq_vdj"]
 
-# VDJ with TRUST with VDJ library
+# VDJ with cellranger with VDJ library
 rule vdj_lib:
 	input:
 		get_vdj_library_input
 	output:
-		directory("vdj/{sample}")
+		directory("vdj_cellranger/{sample}_TCR")
 	threads:
-		1
+		4
 	resources:
-		runtime="12:00:00",
-		mem_mb=16000
+		runtime="01-00:00:00",
+		mem_mb=60000
 	shell:
 		"""
-		/zfs1/tbruno/arc85/TRUST4/run-trust4 \
-			-f /zfs1/tbruno/arc85/TRUST4/hg38_bcrtcr.fa \
-			--ref /zfs1/tbruno/arc85/TRUST4/human_IMGT+C.fa \
-			-u {input}/*_R2_*.fastq.gz \
-			--barcode {input}/*_R1_*.fastq.gz \
-			--barcodeRange 0 15 + \
-			--umiRange 16 25 + \
-			--od {output} \
-			-t 1
+		module load cellranger/6.1.2
+		"""
+		"""
+		mkdir -p vdj_cellranger
+		cd vdj_cellranger
+		cellranger vdj --id={wildcards.sample}_TCR \
+			--fastqs={input} \
+			--reference=/bgfs/genomics/refs/CellRanger/refdata-cellranger-vdj-GRCh38-alts-ensembl-3.1.0 \
+			--sample={wildcards.sample}_TCR \
+			--localcores=4 \
+			--localmem=59
 		"""
 
 # VDJ with TRUST without VDJ library
@@ -141,7 +146,7 @@ rule vdj_no_lib:
 	input:
 		"cellranger/{sample}"
 	output:
-		directory("vdj/{sample}")
+		directory("vdj_trust4/{sample}")
 	threads:
 		1
 	resources:
