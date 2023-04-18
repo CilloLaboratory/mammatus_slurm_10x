@@ -13,9 +13,8 @@ vdj_table = samples_table[samples_table.sample_vdj == True]
 vdj_library_table = vdj_table[~vdj_table['fastq_vdj'].astype(str).str.contains("False")]
 vdj_no_library_table = vdj_table[vdj_table['fastq_vdj'].astype(str).str.contains("False")]
 SAMPLES_VDJ_library = vdj_library_table.loc[:,"sample"].values.tolist()
-SAMPLES_VDJ_library = [s + "_TCR" for s in SAMPLES_VDJ_library]
 SAMPLES_VDJ_no_library = vdj_no_library_table.loc[:,"sample"].values.tolist()
-# SAMPLES_VDJ = SAMPLES_VDJ_library + SAMPLES_VDJ_no_library
+SAMPLES_VDJ_no_library = [s + "_TCR" for s in SAMPLES_VDJ_no_library]
 
 velocyto_table = samples_table[samples_table.sample_velocity == True]
 SAMPLES_VELO = velocyto_table.loc[:,"sample"].values.tolist()
