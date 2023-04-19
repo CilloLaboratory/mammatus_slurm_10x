@@ -53,17 +53,18 @@ rule count:
 		mem_mb=128000
 	shell:
 		"""
-		module load cellranger/6.1.2
+		module load cellranger/7.0.1
 		"""
 		"""
 		mkdir -p cellranger
 		cd cellranger
 		cellranger count --id={wildcards.sample} \
-			--transcriptome=/bgfs/genomics/refs/CellRanger/refdata-cellranger-GRCh38-3.0.0 \
+			--transcriptome=/ix/tbruno/arc85/00_INBOX/cellranger_ref_230418/GRCh38 \
 			--fastqs={input} \
 			--sample={wildcards.sample} \
 			--localcores=8 \
-			--localmem=128
+			--localmem=128 \
+			--include-introns=false
 		"""
 
 # Function to read in citeseq fastq paths from samples_table
@@ -127,14 +128,14 @@ rule vdj_lib:
 		mem_mb=60000
 	shell:
 		"""
-		module load cellranger/6.1.2
+		module load cellranger/7.0.1
 		"""
 		"""
 		mkdir -p vdj_cellranger
 		cd vdj_cellranger
 		cellranger vdj --id={wildcards.sample} \
 			--fastqs={input} \
-			--reference=/bgfs/genomics/refs/CellRanger/refdata-cellranger-vdj-GRCh38-alts-ensembl-3.1.0 \
+			--reference=/ix/tbruno/arc85/00_INBOX/cellranger_ref_230418/vdj_reference/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.1.0 \
 			--sample={wildcards.sample} \
 			--localcores=4 \
 			--localmem=59
