@@ -119,7 +119,7 @@ rule vdj_lib:
 	input:
 		get_vdj_library_input
 	output:
-		directory("vdj_cellranger/{sample}_TCR")
+		directory("vdj_cellranger/{sample}")
 	threads:
 		4
 	resources:
@@ -132,10 +132,10 @@ rule vdj_lib:
 		"""
 		mkdir -p vdj_cellranger
 		cd vdj_cellranger
-		cellranger vdj --id={wildcards.sample}_TCR \
+		cellranger vdj --id={wildcards.sample} \
 			--fastqs={input} \
 			--reference=/bgfs/genomics/refs/CellRanger/refdata-cellranger-vdj-GRCh38-alts-ensembl-3.1.0 \
-			--sample={wildcards.sample}_TCR \
+			--sample={wildcards.sample} \
 			--localcores=4 \
 			--localmem=59
 		"""
@@ -145,7 +145,7 @@ rule vdj_no_lib:
 	input:
 		"cellranger/{sample}"
 	output:
-		directory("vdj_trust4/{sample}")
+		directory("vdj_trust4/{sample}_TCR")
 	threads:
 		1
 	resources:
