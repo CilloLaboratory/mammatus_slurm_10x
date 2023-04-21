@@ -103,7 +103,7 @@ rule citeseq:
 		CITE-seq-Count -R1 {input.fastq}/r1_merged_fastq.gz \
 			-R2 {input.fastq}/r2_merged_fastq.gz \
 			-t citeseq_totalseqC_10tags_human_murine.csv \
-  			-cbf 1 -cbl 16 -umif 17 -umil 28 \
+  			-cbf 1 -cbl 16 -umif 17 -umil 26 \
 			-trim 10 \
 			-o {output} \
 			-cells $EXPECTED_CELLS \
