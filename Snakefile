@@ -49,7 +49,7 @@ rule count:
 	threads:
 		8
 	resources:
-		runtime="03-00:00:00",
+		runtime="3d",
 		mem_mb=128000
 	shell:
 		"""
@@ -59,7 +59,7 @@ rule count:
 		mkdir -p cellranger
 		cd cellranger
 		cellranger count --id={wildcards.sample} \
-			--transcriptome=/ix/tbruno/arc85/00_INBOX/cellranger_ref_230418/GRCh38 \
+			--transcriptome=/ix1/acillo/arc85/references/cellranger_ref_230418/GRCh38 \
 			--fastqs={input} \
 			--sample={wildcards.sample} \
 			--localcores=8 \
@@ -81,7 +81,7 @@ rule citeseq:
 	threads:
 		4
 	resources:
-		runtime="12:00:00",
+		runtime="12h",
 		mem_mb=40000
 	shell:
 		"""
@@ -124,7 +124,7 @@ rule vdj_lib:
 	threads:
 		4
 	resources:
-		runtime="01-00:00:00",
+		runtime="1d",
 		mem_mb=60000
 	shell:
 		"""
@@ -150,7 +150,7 @@ rule vdj_no_lib:
 	threads:
 		1
 	resources:
-		runtime="12:00:00",
+		runtime="12h",
 		mem_mb=16000
 	shell:
 		"""
@@ -172,7 +172,7 @@ rule velocity:
 	threads:
 		4
 	resources:
-		runtime="12:00:00",
+		runtime="12h",
 		mem_mb=64000
 	shell:
 		"""
@@ -197,17 +197,17 @@ rule arcas_extract:
 	threads:
 		4
 	resources:
-		runtime="02:00:00",
+		runtime="2h",
 		mem_mb=64000
 	shell:
 		"""
 		mkdir -p {output}
 		module load singularity/3.9.6
 		singularity exec --bind {input}:/mnt \
-			--bind /ihome/tbruno/arc85/arcasHLA:/home/arcasHLA \
+			--bind /ihome/acillo/arc85/arcasHLA:/home/arcasHLA \
 			--bind {output}:/out \
 			--bind .:/script \
-			/ihome/tbruno/arc85/arcashla.sif /bin/bash /script/arcas_extract.sh
+			/ihome/acillo/arc85/arcashla.sif /bin/bash /script/arcas_extract.sh
 		"""
 
 # ARCAS align rule
@@ -219,15 +219,15 @@ rule arcas_align:
 	threads:
 		4
 	resources:
-		runtime="02:00:00",
+		runtime="2h",
 		mem_mb=64000
 	shell:
 		"""
 		mkdir -p {output}
 		module load singularity/3.9.6
 		singularity exec --bind {input}:/mnt \
-			--bind /ihome/tbruno/arc85/arcasHLA:/home/arcasHLA \
+			--bind /ihome/acillo/arc85/arcasHLA:/home/arcasHLA \
 			--bind {output}:/out \
 			--bind .:/script \
-			/ihome/tbruno/arc85/arcashla.sif /bin/bash /script/arcas_align.sh
+			/ihome/acillo/arc85/arcashla.sif /bin/bash /script/arcas_align.sh
 		"""
