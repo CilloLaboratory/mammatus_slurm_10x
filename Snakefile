@@ -70,45 +70,35 @@ rule count:
 # Function to read in citeseq fastq paths from samples_table
 def get_citeseq_input(wildcards):
 	return citeseq_table.loc[wildcards.sample,"fastq_citeseq"]
+# Function to read in citeseq library CSV path from samples_table
+def get_citeseq_library(wildcards):
+	return citeseq_table.loc[wildcards.sample,"citeseq_library"]
 
-# CITEseq count rule
+# Cellranger FB rule
 rule citeseq:
 	input:
 		fastq=get_citeseq_input,
-		barcodes="cellranger/{sample}/"
+		library=get_citeseq_library
 	output:
 		directory("citeseq/{sample}")
 	threads:
-		4
+		8
 	resources:
 		runtime="12h",
-		mem_mb=40000
+		mem_mb=62000
 	shell:
 		"""
-		module load gcc/8.2.0 r/3.6.0
-		"""
-		"""
-		find {input.fastq} -name "*_R1_*" | xargs cat > {input.fastq}/r1_merged_fastq.gz
-		find {input.fastq} -name "*_R2_*" | xargs cat > {input.fastq}/r2_merged_fastq.gz
-		"""
-		"""
-		Rscript cell_barcode_id.R {input.barcodes}/outs/filtered_feature_bc_matrix {wildcards.sample}
-		EXPECTED_CELLS=$(wc -l {wildcards.sample}_whitelist.csv | cut -d' ' -f 1)
-		"""
-		"""
 		module purge
-		module load cite-seq-count/1.4.3
+		module load cellranger/7.0.1
 		"""
 		"""
-		CITE-seq-Count -R1 {input.fastq}/r1_merged_fastq.gz \
-			-R2 {input.fastq}/r2_merged_fastq.gz \
-			-t citeseq_totalseqC_10tags_human_murine.csv \
-  			-cbf 1 -cbl 16 -umif 17 -umil 26 \
-			-trim 10 \
-			-o {output} \
-			-cells $EXPECTED_CELLS \
-			-wl {wildcards.sample}_whitelist.csv \
-			-T 4
+		cellranger count \ 
+		--id={input.fastq} \
+   		--libraries={input.library} \
+		--transcriptome=/ix1/acillo/arc85/references/cellranger_ref_230418/GRCh38 \
+		--feature-ref=/ix1/acillo/arc85/00_INBOX/delgoffe_chasm/citeseq_reference_list_cellranger.csv \
+		--localcores=8 \
+		--localmem=62 
 		"""
 
 # Function to define vdj samples with libraries
