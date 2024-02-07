@@ -67,9 +67,6 @@ rule count:
 			--include-introns=false
 		"""
 
-# Function to read in citeseq fastq paths from samples_table
-def get_citeseq_input(wildcards):
-	return citeseq_table.loc[wildcards.sample,"fastq_citeseq"]
 # Function to read in citeseq library CSV path from samples_table
 def get_citeseq_library(wildcards):
 	return citeseq_table.loc[wildcards.sample,"citeseq_library"]
@@ -77,7 +74,6 @@ def get_citeseq_library(wildcards):
 # Cellranger FB rule
 rule citeseq:
 	input:
-		fastq=get_citeseq_input,
 		library=get_citeseq_library
 	output:
 		directory("citeseq/{sample}")
@@ -89,11 +85,15 @@ rule citeseq:
 	shell:
 		"""
 		module purge
+		module load gcc/8.2.0 r/4.0.0
+		Rscript 
+		"""
+		"""
+		module purge
 		module load cellranger/7.0.1
 		"""
 		"""
-		cellranger count \ 
-		--id={input.fastq} \
+		cellranger count --id={wildcards.sample} \
    		--libraries={input.library} \
 		--transcriptome=/ix1/acillo/arc85/references/cellranger_ref_230418/GRCh38 \
 		--feature-ref=/ix1/acillo/arc85/00_INBOX/delgoffe_chasm/citeseq_reference_list_cellranger.csv \
