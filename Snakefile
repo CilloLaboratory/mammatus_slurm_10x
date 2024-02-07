@@ -68,12 +68,17 @@ rule count:
 		"""
 
 # Function to read in citeseq library CSV path from samples_table
+def get_citeseq_sample(wildcards):
+	return citeseq_table.loc[wildcards.sample,"sample"]
+
 def get_citeseq_library(wildcards):
 	return citeseq_table.loc[wildcards.sample,"citeseq_library"]
+
 
 # Cellranger FB rule
 rule citeseq:
 	input:
+		sample=get_citeseq_sample
 		library=get_citeseq_library
 	output:
 		directory("citeseq/{sample}")
@@ -86,17 +91,18 @@ rule citeseq:
 		"""
 		module purge
 		module load gcc/8.2.0 r/4.0.0
-		Rscript 
+		mkdir -p citeseq_libraries
+		Rscript create_citeseq_libraries.R {input.sample}
 		"""
 		"""
 		module purge
 		module load cellranger/7.0.1
 		"""
 		"""
-		cellranger count --id={wildcards.sample} \
+		cellranger count --id={input.sample} \
    		--libraries={input.library} \
 		--transcriptome=/ix1/acillo/arc85/references/cellranger_ref_230418/GRCh38 \
-		--feature-ref=/ix1/acillo/arc85/00_INBOX/delgoffe_chasm/citeseq_reference_list_cellranger.csv \
+		--feature-ref=/ix1/acillo/arc85/references/citeseq_references/citeseq/citeseq_reference_list_cellranger.csv \
 		--localcores=8 \
 		--localmem=62 
 		"""
