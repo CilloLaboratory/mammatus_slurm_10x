@@ -30,7 +30,7 @@ localrules:
 rule all:
 	input:
 		expand("cellranger/{final_gex}",final_gex=SAMPLES_GEX),
-		expand("citeseq/{final_citeseq}",final_citeseq=SAMPLES_CITESEQ),
+		expand("citeseq_cellranger/{final_citeseq}",final_citeseq=SAMPLES_CITESEQ),
 		expand("vdj_cellranger/{final_vdj}",final_vdj=SAMPLES_VDJ_library),
 		expand("vdj_trust4/{final_vdj}",final_vdj=SAMPLES_VDJ_no_library),
 		expand("velocyto/{final_velocity}",final_velocity=SAMPLES_VELO),
@@ -68,20 +68,15 @@ rule count:
 		"""
 
 # Function to read in citeseq library CSV path from samples_table
-def get_citeseq_sample(wildcards):
-	return citeseq_table.loc[wildcards.sample,"sample"]
-
 def get_citeseq_library(wildcards):
 	return citeseq_table.loc[wildcards.sample,"citeseq_library"]
 
-
 # Cellranger FB rule
-rule citeseq:
+rule citeseq_cellranger:
 	input:
-		sample=get_citeseq_sample
-		library=get_citeseq_library
+		get_citeseq_library
 	output:
-		directory("citeseq/{sample}")
+		directory("citeseq_cellranger/{sample}")
 	threads:
 		8
 	resources:
@@ -90,19 +85,15 @@ rule citeseq:
 	shell:
 		"""
 		module purge
-		module load gcc/8.2.0 r/4.0.0
-		mkdir -p citeseq_libraries
-		Rscript create_citeseq_libraries.R {input.sample}
-		"""
-		"""
-		module purge
 		module load cellranger/7.0.1
 		"""
 		"""
-		cellranger count --id={input.sample} \
-   		--libraries={input.library} \
+		mkdir -p citeseq_cellranger
+		cd citeseq_cellranger
+		cellranger count --id={wildcards.sample} \
+   		--libraries={input} \
 		--transcriptome=/ix1/acillo/arc85/references/cellranger_ref_230418/GRCh38 \
-		--feature-ref=/ix1/acillo/arc85/references/citeseq_references/citeseq/citeseq_reference_list_cellranger.csv \
+		--feature-ref=/ix1/acillo/arc85/references/citeseq_references/citeseq_reference_list_cellranger.csv \
 		--localcores=8 \
 		--localmem=62 
 		"""
