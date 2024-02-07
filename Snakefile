@@ -122,7 +122,7 @@ rule vdj_lib:
 		cd vdj_cellranger
 		cellranger vdj --id={wildcards.sample} \
 			--fastqs={input} \
-			--reference=/ix1/acillo/arc85/references/cellranger_vdj_ref_240207/GRCh38_vdj \
+			--reference=/ix1/acillo/arc85/references/cellranger_vdj_ref_240207/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.1.0 \
 			--sample={wildcards.sample} \
 			--localcores=4 \
 			--localmem=59
