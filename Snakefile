@@ -122,7 +122,7 @@ rule vdj_lib:
 		cd vdj_cellranger
 		cellranger vdj --id={wildcards.sample} \
 			--fastqs={input} \
-			--reference=/ix/tbruno/arc85/00_INBOX/cellranger_ref_230418/vdj_reference/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.1.0 \
+			--reference=/ix1/acillo/arc85/references/cellranger_vdj_ref_240207/GRCh38_vdj \
 			--sample={wildcards.sample} \
 			--localcores=4 \
 			--localmem=59
@@ -141,9 +141,9 @@ rule vdj_no_lib:
 		mem_mb=16000
 	shell:
 		"""
-		/zfs1/tbruno/arc85/TRUST4/run-trust4 \
-			-f /zfs1/tbruno/arc85/TRUST4/hg38_bcrtcr.fa \
-			--ref /zfs1/tbruno/arc85/TRUST4/human_IMGT+C.fa \
+		/ix1/acillo/arc85/packages/TRUST4/run-trust4 \
+			-f /ix1/acillo/arc85/packages/TRUST4/hg38_bcrtcr.fa \
+			--ref /ix1/acillo/arc85/packages/TRUST4/human_IMGT+C.fa \
 			-b {input}/outs/possorted_genome_bam.bam \
 			--barcode CB \
 			--od {output} \
@@ -168,9 +168,9 @@ rule velocity:
 		module load velocyto/0.17
 		"""
 		"""
-		velocyto run10x -m /zfs1/tbruno/arc85/00_INBOX/18071_for_velocity/mat/grch38_repeat_mask.gtf \
+		velocyto run10x -m /ix1/acillo/arc85/references/cellranger_ref_230418/GRCh38_velocity_repeat_mask/grch38_repeat_mask.gtf \
 			{input} \
-			/bgfs/genomics/refs/CellRanger/refdata-cellranger-GRCh38-3.0.0/genes/genes.gtf
+			/ix1/acillo/arc85/references/cellranger_ref_230418/GRCh38_velocity_genes/genes.gtf
 		mkdir -p velocyto/{wildcards.sample}
 		mv cellranger/{wildcards.sample}/velocyto velocyto/{wildcards.sample}
 		"""
@@ -191,10 +191,10 @@ rule arcas_extract:
 		mkdir -p {output}
 		module load singularity/3.9.6
 		singularity exec --bind {input}:/mnt \
-			--bind /ihome/acillo/arc85/arcasHLA:/home/arcasHLA \
+			--bind /ix1/acillo/arc85/packages/arcasHLA:/home/arcasHLA \
 			--bind {output}:/out \
 			--bind .:/script \
-			/ihome/acillo/arc85/arcashla.sif /bin/bash /script/arcas_extract.sh
+			/ix1/acillo/arc85/packages/arcasHLA/arcashla.sif /bin/bash /script/arcas_extract.sh
 		"""
 
 # ARCAS align rule
@@ -213,8 +213,8 @@ rule arcas_align:
 		mkdir -p {output}
 		module load singularity/3.9.6
 		singularity exec --bind {input}:/mnt \
-			--bind /ihome/acillo/arc85/arcasHLA:/home/arcasHLA \
+			--bind /ix1/acillo/arc85/packages/arcasHLA:/home/arcasHLA \
 			--bind {output}:/out \
 			--bind .:/script \
-			/ihome/acillo/arc85/arcashla.sif /bin/bash /script/arcas_align.sh
+			/ix1/acillo/arc85/packages/arcasHLA/arcashla.sif /bin/bash /script/arcas_align.sh
 		"""
