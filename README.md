@@ -4,9 +4,11 @@ This repo is a snakemake pipeline that begins with demulitplexed FASTQ files fro
 
 The workflow assumes snakemake has been installed and a profile "slurm_htc" has been created to interact with the SLURM system.
 
-## Create samples.csv
+## Preprocessing prior to running the pipeline
 
 The workflow begins with describing the input and output files and paths using the "samples.csv" file. This file is used to create the directed acyclic graph (DAG) to begin the pipeline based on the tasks required.
+
+We note that the script "create_citeseq_libraries.R" can be used prior to running the snakemake pipeline to generate approprate input library files required by cellranger count to process CITEseq data. 
 
 ## Create and check the DAG
 
