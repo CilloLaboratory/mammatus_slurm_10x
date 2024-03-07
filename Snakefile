@@ -19,9 +19,6 @@ SAMPLES_VDJ_no_library = [s + "_TCR" for s in SAMPLES_VDJ_no_library]
 velocyto_table = samples_table[samples_table.sample_velocity == True]
 SAMPLES_VELO = velocyto_table.loc[:,"sample"].values.tolist()
 
-arcas_table = samples_table[samples_table.sample_arcas == True]
-SAMPLES_ARCAS = arcas_table.loc[:,"sample"].values.tolist()
-
 # Define local rule
 localrules:
 	all
@@ -33,8 +30,7 @@ rule all:
 		expand("citeseq_cellranger/{final_citeseq}",final_citeseq=SAMPLES_CITESEQ),
 		expand("vdj_cellranger/{final_vdj}",final_vdj=SAMPLES_VDJ_library),
 		expand("vdj_trust4/{final_vdj}",final_vdj=SAMPLES_VDJ_no_library),
-		expand("velocyto/{final_velocity}",final_velocity=SAMPLES_VELO),
-		expand("arcas/{final_arcas}/genotype/",final_arcas=SAMPLES_ARCAS)
+		expand("velocyto/{final_velocity}",final_velocity=SAMPLES_VELO)
 
 # Function to read in gex fastq paths from samples_table
 def get_gex_input(wildcards):
@@ -59,7 +55,7 @@ rule count:
 		mkdir -p cellranger
 		cd cellranger
 		cellranger count --id={wildcards.sample} \
-			--transcriptome=/ix1/acillo/arc85/references/cellranger_ref_230418/GRCh38 \
+			--transcriptome=/ix1/acillo/arc85/references/cellranger_murine_ref_240306/GRCm39 \
 			--fastqs={input} \
 			--sample={wildcards.sample} \
 			--localcores=8 \
@@ -103,7 +99,7 @@ rule citeseq_cellranger:
 		cellranger count --id={wildcards.sample} \
    		--libraries={input} \
 		--transcriptome=/ix1/acillo/arc85/references/cellranger_ref_230418/GRCh38 \
-		--feature-ref=/ix1/acillo/arc85/references/citeseq_references/citeseq_reference_list_cellranger.csv \
+		--feature-ref=/ix1/acillo/arc85/references/citeseq_references/citeseq_murine_reference_list_cellranger.csv \
 		--localcores=8 \
 		--localmem=62 
 		"""
@@ -132,32 +128,10 @@ rule vdj_lib:
 		cd vdj_cellranger
 		cellranger vdj --id={wildcards.sample} \
 			--fastqs={input} \
-			--reference=/ix1/acillo/arc85/references/cellranger_vdj_ref_240207/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.1.0 \
+			--reference=/ix1/acillo/arc85/references/cellranger_murine_vdj_ref_240306/refdata-cellranger-vdj-GRCm38-alts-ensembl-7.0.0 \
 			--sample={wildcards.sample} \
 			--localcores=4 \
 			--localmem=59
-		"""
-
-# VDJ with TRUST without VDJ library
-rule vdj_no_lib:
-	input:
-		"cellranger/{sample}"
-	output:
-		directory("vdj_trust4/{sample}_TCR")
-	threads:
-		1
-	resources:
-		runtime="12h",
-		mem_mb=16000
-	shell:
-		"""
-		/ix1/acillo/arc85/packages/TRUST4/run-trust4 \
-			-f /ix1/acillo/arc85/packages/TRUST4/hg38_bcrtcr.fa \
-			--ref /ix1/acillo/arc85/packages/TRUST4/human_IMGT+C.fa \
-			-b {input}/outs/possorted_genome_bam.bam \
-			--barcode CB \
-			--od {output} \
-			-t 1
 		"""
 
 # Velocyto rule
@@ -178,53 +152,9 @@ rule velocity:
 		module load velocyto/0.17
 		"""
 		"""
-		velocyto run10x -m /ix1/acillo/arc85/references/cellranger_ref_230418/GRCh38_velocity_repeat_mask/grch38_repeat_mask.gtf \
+		velocyto run10x -m /ix1/acillo/arc85/references/cellranger_murine_ref_240306/GRCm39_velocity_repeat_mask/GRCm39_repeat_mask.gtf \
 			{input} \
-			/ix1/acillo/arc85/references/cellranger_ref_230418/GRCh38_velocity_genes/genes.gtf
+			/ix1/acillo/arc85/references/cellranger_murine_ref_240306/GRCm39_velocity_genes/genes.gtf
 		mkdir -p velocyto/{wildcards.sample}
 		mv cellranger/{wildcards.sample}/velocyto velocyto/{wildcards.sample}
-		"""
-
-# ARCAS extract rule
-rule arcas_extract:
-	input:
-		"cellranger/{sample}"
-	output:
-		directory("arcas/{sample}/fastq/")
-	threads:
-		4
-	resources:
-		runtime="2h",
-		mem_mb=64000
-	shell:
-		"""
-		mkdir -p {output}
-		module load singularity/3.9.6
-		singularity exec --bind {input}:/mnt \
-			--bind /ix1/acillo/arc85/packages/arcasHLA:/home/arcasHLA \
-			--bind {output}:/out \
-			--bind .:/script \
-			/ix1/acillo/arc85/packages/arcasHLA/arcashla.sif /bin/bash /script/arcas_extract.sh
-		"""
-
-# ARCAS align rule
-rule arcas_align:
-	input:
-		"arcas/{sample}/fastq"
-	output:
-		directory("arcas/{sample}/genotype/")
-	threads:
-		4
-	resources:
-		runtime="2h",
-		mem_mb=64000
-	shell:
-		"""
-		mkdir -p {output}
-		module load singularity/3.9.6
-		singularity exec --bind {input}:/mnt \
-			--bind /ix1/acillo/arc85/packages/arcasHLA:/home/arcasHLA \
-			--bind {output}:/out \
-			--bind .:/script \
-			/ix1/acillo/arc85/packages/arcasHLA/arcashla.sif /bin/bash /script/arcas_align.sh
 		"""
