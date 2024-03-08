@@ -84,16 +84,6 @@ rule citeseq_cellranger:
 		mem_mb=62000
 	shell:
 		"""
-		module purge 
-		module load gcc/10.2.0 r/4.2.0
-		"""
-		"""
-		mkdir -p citeseq_libraries
-		"""
-		"""
-		Rscript create_citeseq_libraries.R --args {wildcards.sample}
-		"""
-		"""
 		module purge
 		module load cellranger/7.0.1
 		"""
