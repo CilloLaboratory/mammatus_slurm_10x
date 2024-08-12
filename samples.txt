@@ -1,0 +1,5 @@
+sample	sample_gex	sample_citeseq	sample_vdj	sample_velocity	sample_arcas	fastq_gex	fastq_citeseq	fastq_vdj	citeseq_library
+Sample_1_GEX	TRUE	FALSE	TRUE	TRUE	TRUE	/path/to/Sample_1_GEX_FASTQ	FALSE	FALSE	FALSE
+Sample_1_CITEseq	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	/path/to/Sample_1_CITESEQ_FASTQ	FALSE	/path/to/Sample_1_CITEseq_library.csv
+Sample_2_GEX	TRUE	FALSE	FALSE	TRUE	TRUE	/path/to/Sample_2_GEX_FASTQ	FALSE	FALSE	FALSE
+Sample_2_VDJ	FALSE	FALSE	TRUE	FALSE	FALSE	FALSE	FALSE	/path/to/Sample_3_VDJ_FASTQ	FALSE

@@ -1,5 +1,0 @@
-sample,sample_gex,sample_citeseq,sample_vdj,sample_velocity,sample_arcas,fastq_gex,fastq_citeseq,fastq_vdj,citeseq_library
-Sample_1_GEX,True,False,True,True,True,/path/to/Sample_1_GEX_FASTQ,False,False,False
-Sample_1_CITEseq,False,True,False,False,False,False,/path/to/Sample_1_CITESEQ_FASTQ,False,/path/to/Sample_1_CITEseq_library.csv
-Sample_2_GEX,True,False,False,True,True,/path/to/Sample_2_GEX_FASTQ,False,False,False
-Sample_2_VDJ,False,False,True,False,False,False,False,/path/to/Sample_3_VDJ_FASTQ,False
