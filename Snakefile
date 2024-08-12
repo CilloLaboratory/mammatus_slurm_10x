@@ -1,6 +1,6 @@
 # Read in data
 import pandas as pd
-samples_table = pd.read_csv("samples.csv").set_index("sample",drop=False)
+samples_table = pd.read_csv("samples.txt",sep="\t").set_index("sample",drop=False)
 
 # Definitions for rule all
 gex_table = samples_table[samples_table.sample_gex == True]
@@ -38,7 +38,7 @@ rule all:
 
 # Function to read in gex fastq paths from samples_table
 def get_gex_input(wildcards):
-	return gex_table.loc[wildcards.sample,"fastq_gex"]
+	return gex_table.loc[wildcards.sample,"fastq_gex"].split(",")
 
 # Cellranger count rule
 rule count:
@@ -58,9 +58,10 @@ rule count:
 		"""
 		mkdir -p cellranger
 		cd cellranger
+		parsed_input=$(echo {input} | sed 's/ /,/g')
 		cellranger count --id={wildcards.sample} \
 			--transcriptome=/ix1/acillo/arc85/references/cellranger_ref_230418/GRCh38 \
-			--fastqs={input} \
+			--fastqs=$parsed_input \
 			--sample={wildcards.sample} \
 			--localcores=8 \
 			--localmem=128 \
@@ -93,7 +94,7 @@ rule citeseq_cellranger:
 		cellranger count --id={wildcards.sample} \
    		--libraries={input} \
 		--transcriptome=/ix1/acillo/arc85/references/cellranger_ref_230418/GRCh38 \
-		--feature-ref=/ix1/acillo/arc85/references/citeseq_references/citeseq_reference_list_cellranger.csv \
+		--feature-ref=/ix1/acillo/arc85/references/citeseq_references/citeseq_reference_list_hashing.csv \
 		--localcores=8 \
 		--localmem=62 
 		"""
