@@ -53,7 +53,7 @@ rule count:
 		mem_mb=128000
 	shell:
 		"""
-		module load cellranger/7.0.1
+		module load cellranger/9.0.1
 		"""
 		"""
 		mkdir -p cellranger
@@ -86,7 +86,7 @@ rule citeseq_cellranger:
 	shell:
 		"""
 		module purge
-		module load cellranger/7.0.1
+		module load cellranger/9.0.1
 		"""
 		"""
 		mkdir -p citeseq_cellranger
@@ -116,7 +116,7 @@ rule vdj_lib:
 		mem_mb=60000
 	shell:
 		"""
-		module load cellranger/7.0.1
+		module load cellranger/9.0.1
 		"""
 		"""
 		mkdir -p vdj_cellranger
