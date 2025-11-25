@@ -132,7 +132,6 @@ rule vdj_lib:
 			--fastqs={input} \
 			--reference=/ix1/acillo/arc85/references/cellranger_vdj_ref_240207/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.1.0 \
 			--sample={wildcards.sample} \
-			--create-bam=true \
 			--localcores=4 \
 			--localmem=59
 		"""
