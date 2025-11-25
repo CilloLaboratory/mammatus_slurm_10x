@@ -66,6 +66,7 @@ rule count:
 			--fastqs=$parsed_input \
 			--sample={wildcards.sample} \
 			--create-bam=true \
+			--nosecondary \
 			--localcores=8 \
 			--localmem=128 \
 			--include-introns=false
@@ -99,6 +100,7 @@ rule citeseq_cellranger:
    		--libraries={input} \
 		--transcriptome=/ix1/acillo/arc85/references/cellranger_ref_230418/GRCh38 \
 		--feature-ref=/ix1/acillo/arc85/references/citeseq_references/citeseq_reference_list_hashing.csv \
+		--nosecondary \
 		--create-bam=true \
 		--localcores=8 \
 		--localmem=62 
