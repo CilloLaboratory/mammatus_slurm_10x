@@ -53,7 +53,9 @@ rule count:
 		mem_mb=128000
 	shell:
 		"""
+		module purge
 		module load cellranger/9.0.1
+		cellranger telemetry disable
 		"""
 		"""
 		mkdir -p cellranger
@@ -88,6 +90,7 @@ rule citeseq_cellranger:
 		"""
 		module purge
 		module load cellranger/9.0.1
+		cellranger telemetry disable
 		"""
 		"""
 		mkdir -p citeseq_cellranger
@@ -118,7 +121,9 @@ rule vdj_lib:
 		mem_mb=60000
 	shell:
 		"""
+		module purge
 		module load cellranger/9.0.1
+		cellranger telemetry disable
 		"""
 		"""
 		mkdir -p vdj_cellranger
