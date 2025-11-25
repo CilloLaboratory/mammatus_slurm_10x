@@ -63,6 +63,7 @@ rule count:
 			--transcriptome=/ix1/acillo/arc85/references/cellranger_ref_230418/GRCh38 \
 			--fastqs=$parsed_input \
 			--sample={wildcards.sample} \
+			--create-bam=true \
 			--localcores=8 \
 			--localmem=128 \
 			--include-introns=false
@@ -95,6 +96,7 @@ rule citeseq_cellranger:
    		--libraries={input} \
 		--transcriptome=/ix1/acillo/arc85/references/cellranger_ref_230418/GRCh38 \
 		--feature-ref=/ix1/acillo/arc85/references/citeseq_references/citeseq_reference_list_hashing.csv \
+		--create-bam=true \
 		--localcores=8 \
 		--localmem=62 
 		"""
@@ -125,6 +127,7 @@ rule vdj_lib:
 			--fastqs={input} \
 			--reference=/ix1/acillo/arc85/references/cellranger_vdj_ref_240207/refdata-cellranger-vdj-GRCh38-alts-ensembl-7.1.0 \
 			--sample={wildcards.sample} \
+			--create-bam=true \
 			--localcores=4 \
 			--localmem=59
 		"""
